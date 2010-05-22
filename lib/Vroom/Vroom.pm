@@ -200,13 +200,14 @@ sub makeHTML {
         my $next = ($i + 1 < @slides) ? $slides[$i + 1] : '';
         my $text = io($slide)->all;
         my $title = $text;
+		my @textwithLinks = split /(http:\/\/\S+)/, $text;
         $text = Template::Toolkit::Simple->new()->render(
-            $self->slideTemplate,
+            $self->slideTemplatewithLinks,
             {
                 title => "$slide",
                 prev => $prev,
                 next => $next,
-                content => $text,
+                content => \@textwithLinks,
             }
         );
         io("html/$slide.html")->print($text);
@@ -312,6 +313,51 @@ function navigate(e) {
 <body onkeypress="return navigate(event)">
 <pre>
 [%- content | html -%]
+</pre>
+</body>
+...
+}
+
+sub slideTemplatewithLinks {
+    \ <<'...'
+<html>
+<head>
+<title>[% title | html %]</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script>
+function navigate(e) {
+    var keynum = (window.event) // IE
+        ? e.keyCode
+        : e.which;
+    if (keynum == 8) {
+[% IF prev -%]
+        window.location = "[% prev %]" + ".html";
+[% END -%]
+        return false;
+    }
+[% IF next -%]
+    if (keynum == 13 || keynum == 32) {
+        window.location = "[% next %]" + ".html";
+        return false;
+    }
+[% END -%]
+    if (keynum == 73 || keynum == 105) {
+        window.location = "index.html";
+        return false;
+    }
+    return true;
+}
+</script>
+</head>
+<body onkeypress="return navigate(event)">
+<pre>
+[%- FOREACH string IN content -%]
+[%- IF string.match('(http://\S+)') -%]
+<a href="[% string %]">[% string %]</a>
+[%- ELSE -%]
+[%- string | html -%]
+[%- END -%]
+[%- END -%]
 </pre>
 </body>
 ...
