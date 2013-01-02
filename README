@@ -1,5 +1,5 @@
 NAME
-    Vroom::Vroom - Slide Shows in Vim
+    Vroom - Slide Shows in Vim
 
 SYNOPSIS
         > mkdir MySlides    # Make a Directory for Your Slides
@@ -56,6 +56,10 @@ COMMAND USAGE
         with the spacebar and backspace keys. Created in the "html/"
         subdirectory.
 
+    vroom --text
+        Publish the slides to plain text. This action uses all the text
+        slides in their unsplit form. Created in the "text/" subdirectory.
+
     vroom --clean
         Clean up all the compiled output files.
 
@@ -90,6 +94,7 @@ INPUT FORMAT
         height: 84
         width: 20
         # skip: 12      # Skip 12 slides. Useful when making slides.
+        # auto_size: 1  # Determines height/width automatically
         ---- center
         My Presentation
 
@@ -102,7 +107,7 @@ INPUT FORMAT
         +* Baz
         ---- perl,i10
         # Perl code indented 10 spaces
-        use Vroom::Vroom;
+        use Vroom;
 
         print "Hello World";
         ---- center
@@ -142,7 +147,7 @@ CONFIGURATION OPTIONS
     i-##
         'i' followed by a negative number means to strip that number of
         leading characters from the contents of the slide. This can be
-        useful if you need to have characters special to Vroom::Vroom at the
+        useful if you need to have characters special to Vroom at the
         beginning of your lines, for example if the contents of your slide
         is unified diff output.
 
@@ -177,6 +182,10 @@ CONFIGURATION OPTIONS
     width: <number>
         The number of columns in the terminal you plan to use when
         presenting the show. Used for centering the content.
+
+    auto_size: <0|1>
+        When set to 1, the height/width options above will be ignored and
+        determined each time you start the slideshow.
 
     indent: <number>
         All slides will be indented by this number of spaces by default.
@@ -299,20 +308,11 @@ GITHUB NOTES
     You can see an example of a talk published to HTML and posted via
     gh-pages at <http://ingydotnet.github.com/vroom-pm/>.
 
-NOTE
-    Vroom is called Vroom, but the module is Vroom::Vroom because the CPAN
-    shell sometimes thinks Vroom is Tim Vroom, and it refuses to install
-    him.
-
-    Use a shell command like this to install Vroom:
-
-        sudo cpan Vroom::Vroom
-
 AUTHOR
-    Ingy döt Net <ingy@cpan.org>
+    Ingy dÃ¶t Net <ingy@ingy.net>
 
-COPYRIGHT
-    Copyright (c) 2008, 2009. Ingy döt Net.
+COPYRIGHT AND LICENSE
+    Copyright (c) 2008-2012. Ingy dÃ¶t Net.
 
     This program is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
