@@ -17,6 +17,9 @@ use Template::Toolkit::Simple 0.16;
 use Term::Size 0.207;
 use YAML::XS 0.38;
 
+#greg
+use Encode;
+
 use Getopt::Long;
 use Cwd;
 use Carp;
@@ -241,16 +244,22 @@ sub makeHTML {
         my $next = ($i + 1 < @slides) ? $slides[$i + 1] : '';
         my $text = io($slide)->all;
         my $title = $text;
+#greg
+	my @textwithLinks = split /(https?:\/\/\S+)/, $text;
         $text = Template::Toolkit::Simple->new()->render(
             $self->slideTemplate,
             {
                 title => "$slide",
                 prev => $prev,
                 next => $next,
-                content => $text,
+#greg
+                content => \@textwithLinks,
+                # content => $text,
             }
         );
-        io("html/$slide.html")->print($text);
+#greg
+	# io("html/$slide.html")->print($text);
+        io("html/$slide.html")->print(decode_utf8($text) );
     }
 
     my $index = [];
@@ -259,7 +268,9 @@ sub makeHTML {
         next if $slide =~ /^\d+[a-z]/;
         my $title = io($slide)->all;
         $title =~ s/.*?((?-s:\S.*)).*/$1/s;
-        push @$index, [$slide, $title];
+#greg
+	#push @$index, [$slide, $title];
+        push @$index, [$slide, decode_utf8( $title )];
     }
 
     io("html/index.html")->print(
@@ -351,8 +362,16 @@ function navigate(e) {
 </script>
 </head>
 <body onkeypress="return navigate(event)">
+<a href=http:index.html>Back to Index</a>
 <pre>
-[%- content | html -%]
+[%- FOREACH string IN content -%]
+[%- IF string.match('(https?://\S+)') -%]
+<a href="[% string %]">[% string %]</a>
+[%- ELSE -%]
+[%- string | html -%]
+[%- END -%]
+[%- END -%]
+<!-- #greg [%- content | html -%] -->
 </pre>
 </body>
 ...
